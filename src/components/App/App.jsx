@@ -7,73 +7,44 @@ import Filter from '../Filter/Filter';
 
 
 export default function App() {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(()=>{
+    return JSON.parse(window.localStorage.getItem('contacts')) ?? '';
+  });
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
     window.localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
-  const findContacts = (e) => {
-    const { value } = e.currentTarget
-    setFilter(value);
+ 
+
+   const deleteContact = contactId => {
+    setContacts((state) => state.filter(contact=> contact.id !== contactId)
+    )
   }
 
   const formSubmit = (data) => {
     setContacts([...contacts, data]);
   }
 
-  const getVisibleContacts = () => {
-    const normalizedFilter = filter.toLowerCase();
-    return contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter))
-  }
+  
+  //  const getVisibleContacts = () => {
+  //   const normalizedFilter = filter.toLowerCase();
+  //   return contacts.filter(contact =>contact.name.toLowerCase().includes(normalizedFilter))
+  // }
 
-  const deleteContact = contactId => {
-    setContacts((state) => {
-      console.log(state);
-      state.filter(contact => contact.id !== contactId)
-    })
-  }
 
   return (
     <Container>
       <TitleMain>Phonebook</TitleMain>
       <Form onSubmit={formSubmit} data={contacts} />
       <TitleBook>Contacts</TitleBook>
-      <Filter value={filter} onChange={findContacts} />
-      <ContactsList contacts={getVisibleContacts()} onDeleteContact={deleteContact} />
+      <Filter onChange={(e) => setFilter(e.currentTarget.value)} value={filter}/>
+      <ContactsList contacts={contacts} onDeleteContact={deleteContact} />
     </Container>
   )
 }
 
-
-// export class App extends Component {
-
-//   state = {
-//   contacts: [],
-//   filter: '',
-//   }
-
-//   componentDidMount() {
-//     const contacts = localStorage.getItem('contacts')
-//     const parseContacts = JSON.parse(contacts);
-//     if (parseContacts) {
-//       this.setState({ contacts: parseContacts });
-//     }
-//   }
-
-//   componentDidUpdate(prevProps, prevState) {
-//     const { contacts } = this.state;
-//     if (contacts !== prevState.contacts) {
-//       localStorage.setItem('contacts', JSON.stringify(contacts));
-//     }
-//   }
-
-  // deleteContact = contactId => {
-  //   this.setState((prevState) => ({
-  //     contacts: prevState.contacts.filter((contact) => contact.id !== contactId),
-  //   }))
-  // }
 
 
 // {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
